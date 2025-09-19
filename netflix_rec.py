@@ -4,6 +4,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from collections import Counter
 import numpy as np
+# First, add these imports at the top
+from supabase_loader import NetflixDataLoader
+import os
+from dotenv import load_dotenv
 
 # Page configuration
 st.set_page_config(
@@ -13,19 +17,34 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load and cache data
+# Replace the entire load_netflix_data function with this:
 @st.cache_data
 def load_netflix_data():
     try:
-        data = pd.read_csv("netflix_titles_nov_2019.csv")
-        # Clean and prepare data
+        # Load environment variables
+        load_dotenv()
+        
+        # Initialize Supabase loader
+        loader = NetflixDataLoader()
+        
+        # Load data from Supabase instead of CSV
+        data = loader.load_netflix_data()
+        
+        if data is None or data.empty:
+            st.error("Failed to load data from Supabase database!")
+            st.stop()
+        
+        # Clean and prepare data (same as before)
         data['release_year'] = pd.to_numeric(data['release_year'], errors='coerce')
         data['listed_in'] = data['listed_in'].fillna('')
         data['director'] = data['director'].fillna('')
         data['country'] = data['country'].fillna('')
+        
         return data
-    except FileNotFoundError:
-        st.error("Dataset not found! Please ensure 'netflix_titles_nov_2019.csv' is in the same directory.")
+        
+    except Exception as e:
+        st.error(f"Error connecting to database: {str(e)}")
+        st.error("Please check your Supabase configuration in the .env file.")
         st.stop()
 
 netflix_data = load_netflix_data()
