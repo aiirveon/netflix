@@ -24,6 +24,8 @@ def load_netflix_data():
         # Load environment variables
         load_dotenv()
         
+        
+        
         # Initialize Supabase loader
         loader = NetflixDataLoader()
         

@@ -9,10 +9,11 @@ class NetflixDataLoader:
         # Load environment variables from .env file
         load_dotenv()
         
+        
         # Get Supabase credentials from environment
         self.url = os.getenv("SUPABASE_URL")
         self.key = os.getenv("SUPABASE_KEY")
-        self.table_name = os.getenv("TABLE_NAME", "netflix_titles")
+        self.table_name = os.getenv("TABLE_NAME", "netflix_titles_nov_2019")
         
         # Validate that we have the required credentials
         if not self.url or not self.key:
